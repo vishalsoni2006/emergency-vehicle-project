@@ -35,6 +35,7 @@ from ui_components import (
     render_metrics_row,
     render_preemption_alert,
     render_traffic_signal_card,
+    render_4way_junction_visualizer_html,
     render_interactive_charts,
     render_model_comparison_table
 )
@@ -68,6 +69,20 @@ if "traffic_light_state" not in st.session_state:
     st.session_state.traffic_light_state = "RED"
 if "current_timer" not in st.session_state:
     st.session_state.current_timer = DEFAULT_INITIAL_RED
+if "selected_lane_id" not in st.session_state:
+    st.session_state.selected_lane_id = 5
+
+# Lane to Road mappings
+LANE_INFO = {
+    1: {"name": "CCTV Lane 1", "road": "Road 1 (North)", "road_id": 1, "signal_id": 1},
+    2: {"name": "CCTV Lane 2", "road": "Road 1 (North)", "road_id": 1, "signal_id": 1},
+    3: {"name": "CCTV Lane 3", "road": "Road 2 (East)",  "road_id": 2, "signal_id": 2},
+    4: {"name": "CCTV Lane 4", "road": "Road 2 (East)",  "road_id": 2, "signal_id": 2},
+    5: {"name": "CCTV Lane 5", "road": "Road 3 (South)", "road_id": 3, "signal_id": 3},
+    6: {"name": "CCTV Lane 6", "road": "Road 3 (South)", "road_id": 3, "signal_id": 3},
+    7: {"name": "CCTV Lane 7", "road": "Road 4 (West)",  "road_id": 4, "signal_id": 4},
+    8: {"name": "CCTV Lane 8", "road": "Road 4 (West)",  "road_id": 4, "signal_id": 4},
+}
 
 # 4. Sidebar Controls
 with st.sidebar:
@@ -97,8 +112,22 @@ with st.sidebar:
     
     st.markdown("---")
     
+    # Target CCTV Lane Selection (1 to 8)
+    st.markdown("### 📹 CCTV Lane Selection (1 of 8)")
+    lane_options = [
+        f"Lane {i}: {LANE_INFO[i]['road']} - {LANE_INFO[i]['name']}" for i in range(1, 9)
+    ]
+    selected_lane_idx = st.selectbox(
+        "Monitored CCTV Feed",
+        options=list(range(1, 9)),
+        format_func=lambda i: f"Lane {i} — {LANE_INFO[i]['road']}",
+        index=4  # Default to Lane 5 (Road 3)
+    )
+    st.session_state.selected_lane_id = selected_lane_idx
+    target_lane_info = LANE_INFO[selected_lane_idx]
+    
     # Video Input Selection
-    st.markdown("### 📹 Video Source")
+    st.markdown("### 🎬 Video Source")
     video_source_type = st.radio(
         "Choose Input Source",
         options=["Pre-loaded Test Traffic Video", "Auto-Generated Demo Video", "Upload Custom Video"],
@@ -108,7 +137,7 @@ with st.sidebar:
     uploaded_file = None
     if video_source_type == "Upload Custom Video":
         uploaded_file = st.file_uploader(
-            f"Upload Video (Max {MAX_UPLOAD_SIZE_MB}MB)",
+            f"Upload Video for Lane {selected_lane_idx} (Max {MAX_UPLOAD_SIZE_MB}MB)",
             type=ALLOWED_EXTENSIONS,
             help="Supported formats: MP4, AVI, MOV, MKV"
         )
@@ -118,7 +147,7 @@ with st.sidebar:
                 st.error(f"Uploaded file ({file_size_mb:.1f}MB) exceeds the {MAX_UPLOAD_SIZE_MB}MB limit.")
                 uploaded_file = None
             else:
-                st.success(f"Video loaded: {uploaded_file.name} ({file_size_mb:.1f}MB)")
+                st.success(f"Video loaded for Lane {selected_lane_idx}: {uploaded_file.name} ({file_size_mb:.1f}MB)")
                 
     st.markdown("---")
     
@@ -173,20 +202,35 @@ render_header()
 
 # 6. Main Dashboard Tabs
 tab1, tab2, tab3, tab4 = st.tabs([
-    "Video Detection Simulation",
+    "4-Road 8-Lane Junction Preemption",
     "Model Performance Analytics",
     "Detection Logic Explained",
     "Conclusion & Future Scope"
 ])
 
 # ==============================================================================
-# TAB 1: VIDEO DETECTION SIMULATION
+# TAB 1: 4-ROAD 8-LANE JUNCTION SIMULATION
 # ==============================================================================
 with tab1:
     # Top-level dynamic containers
     metrics_container = st.empty()
     alert_container = st.empty()
+
+    # Central 4-Road 8-Lane Graphical Junction Visualizer Container
+    junction_container = st.empty()
     
+    # Quick Lane Simulation Buttons
+    st.markdown("##### ⚡ Quick Preemption Trigger: Select Lane to Simulate Ambulance")
+    lane_btn_cols = st.columns(8)
+    simulated_lane = None
+    for idx, col in enumerate(lane_btn_cols, start=1):
+        with col:
+            if st.button(f"Lane {idx}", key=f"btn_lane_{idx}", use_container_width=True, help=f"Simulate emergency on {LANE_INFO[idx]['road']}"):
+                st.session_state.selected_lane_id = idx
+                st.toast(f"Switched monitoring to Lane {idx} ({LANE_INFO[idx]['road']})!", icon="🚨")
+    
+    st.markdown("---")
+
     # Two-column layout for Video Stream & Traffic Signal HUD
     col_stream, col_hud = st.columns([5, 3])
     
@@ -195,8 +239,13 @@ with tab1:
     with col_hud:
         hud_placeholder = st.empty()
 
+    current_monitored_lane = st.session_state.selected_lane_id
+    current_lane_meta = LANE_INFO[current_monitored_lane]
+
     # Determine input video path
-    input_video_path = "test_traffic.mp4"
+    input_video_path = "WhatsApp Video 2026-09-13 at 18.14.01.mp4"
+    if not os.path.exists(input_video_path):
+        input_video_path = "test_traffic.mp4"
     output_video_path = "output_detection.mp4"
     
     if video_source_type == "Upload Custom Video":
@@ -221,13 +270,25 @@ with tab1:
                 if not os.path.exists(input_video_path):
                     create_synthetic_video(input_video_path, "merged_dataset/test/images")
 
-    # Render Empty State when idle
+    # Render Initial Junction Visualizer & Empty State when idle
     if not start_btn and not st.session_state.is_running and not st.session_state.simulation_completed:
+        junction_container.markdown(
+            render_4way_junction_visualizer_html(
+                active_road_id=1,
+                is_emergency=False,
+                emergency_road_id=current_lane_meta["road_id"],
+                emergency_lane_id=current_monitored_lane
+            ),
+            unsafe_allow_html=True
+        )
         with col_stream:
             render_empty_state()
         with col_hud:
             hud_placeholder.markdown(
-                render_traffic_signal_card("RED", init_red_sec, False, False, init_red_sec, preempt_red_sec),
+                render_traffic_signal_card(
+                    "RED", init_red_sec, False, False, init_red_sec, preempt_red_sec,
+                    lane_id=current_monitored_lane, road_name=current_lane_meta["road"]
+                ),
                 unsafe_allow_html=True
             )
             
@@ -273,7 +334,7 @@ with tab1:
                 t_prev = time.time()
                 current_fps = float(fps)
                 
-                st.toast("Optical signal preemption simulation active!", icon="🚦")
+                st.toast(f"Optical signal preemption simulation active on Lane {current_monitored_lane} ({current_lane_meta['road']})!", icon="🚦")
                 
                 while cap.isOpened() and st.session_state.is_running:
                     ret, frame = cap.read()
@@ -410,7 +471,7 @@ with tab1:
                             preemption_triggered = True
                             if current_timer > preemption_red_duration:
                                 current_timer = preemption_red_duration
-                                st.toast("🚨 Ambulance Detected! Truncating Red Light to 10s!", icon="⚡")
+                                st.toast(f"🚨 Ambulance Detected in Lane {current_monitored_lane}! Truncating Red Light to 10s!", icon="⚡")
                                 
                     dt = (1.0 / max(1, fps)) * speed_mult
                     if traffic_light_state == "RED":
@@ -451,7 +512,7 @@ with tab1:
                     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     video_placeholder.image(rgb_frame, channels="RGB", use_container_width=True)
                     
-                    # Update live metrics and HUD card every 2 frames for smooth responsiveness
+                    # Update live metrics, 4-way junction visualizer, and HUD card
                     if frame_idx % 2 == 0 or preemption_triggered:
                         with metrics_container.container():
                             render_metrics_row(
@@ -459,11 +520,22 @@ with tab1:
                             )
                         with alert_container.container():
                             render_preemption_alert(
-                                traffic_light_state, is_amb_present, current_timer, normal_red_duration, preemption_red_duration
+                                traffic_light_state, is_amb_present, current_timer, normal_red_duration, preemption_red_duration,
+                                lane_id=current_monitored_lane, road_name=current_lane_meta["road"]
                             )
+                        junction_container.markdown(
+                            render_4way_junction_visualizer_html(
+                                active_road_id=current_lane_meta["road_id"],
+                                is_emergency=preemption_triggered,
+                                emergency_road_id=current_lane_meta["road_id"],
+                                emergency_lane_id=current_monitored_lane
+                            ),
+                            unsafe_allow_html=True
+                        )
                         hud_placeholder.markdown(
                             render_traffic_signal_card(
-                                traffic_light_state, current_timer, preemption_triggered, is_amb_present, normal_red_duration, preemption_red_duration
+                                traffic_light_state, current_timer, preemption_triggered, is_amb_present, normal_red_duration, preemption_red_duration,
+                                lane_id=current_monitored_lane, road_name=current_lane_meta["road"]
                             ),
                             unsafe_allow_html=True
                         )

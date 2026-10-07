@@ -1,4 +1,5 @@
 import os
+import textwrap
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -21,65 +22,60 @@ def render_header():
     Renders the unified header banner with cyberpunk accent badge,
     title, subtitle, and live system status pills.
     """
-    st.markdown(
-        f"""
-        <div style="margin-bottom: 1.2rem;">
-            <div class="header-badge">
-                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#FF007F; margin-right:4px;"></span>
-                Autonomous Optical Signal Preemption System
-            </div>
-            <h1 style="margin: 0; font-size: 2.1rem; letter-spacing: -0.5px;">{APP_TITLE}</h1>
-            <p style="margin: 0.35rem 0 1rem 0; color: #94A3B8; font-size: 0.98rem;">
-                {APP_SUBTITLE}
-            </p>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <span style="background: rgba(188,0,221,0.15); border: 1px solid rgba(188,0,221,0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #E2E8F0;">
-                    Core Engine: <b>YOLOv11 Nano</b>
-                </span>
-                <span style="background: rgba(0,229,255,0.12); border: 1px solid rgba(0,229,255,0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #00E5FF;">
-                    Verification: <b>HSV Siren Strobe Scanner</b>
-                </span>
-                <span style="background: rgba(0,230,118,0.12); border: 1px solid rgba(0,230,118,0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #00E676;">
-                    Preemption: <b>50s ➔ 10s Truncation + Green Wave Hold</b>
-                </span>
-            </div>
+    html = textwrap.dedent(f"""
+    <div style="margin-bottom: 1.2rem;">
+        <div class="header-badge">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#FF007F; margin-right:4px;"></span>
+            Autonomous Optical Signal Preemption System • 4 Roads • 8 Lanes
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        <h1 style="margin: 0; font-size: 2.1rem; letter-spacing: -0.5px;">{APP_TITLE}</h1>
+        <p style="margin: 0.35rem 0 1rem 0; color: #94A3B8; font-size: 0.98rem;">
+            {APP_SUBTITLE}
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span style="background: rgba(188,0,221,0.15); border: 1px solid rgba(188,0,221,0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #E2E8F0;">
+                Core Engine: <b>YOLOv11 Nano</b>
+            </span>
+            <span style="background: rgba(0,229,255,0.12); border: 1px solid rgba(0,229,255,0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #00E5FF;">
+                Verification: <b>HSV Siren Strobe Scanner</b>
+            </span>
+            <span style="background: rgba(0,230,118,0.12); border: 1px solid rgba(0,230,118,0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #00E676;">
+                Preemption: <b>4-Way Junction Priority Override</b>
+            </span>
+        </div>
+    </div>
+    """)
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def render_empty_state():
     """
     Renders an instructional placeholder when no video simulation is currently active.
     """
-    st.markdown(
-        """
-        <div class="empty-state-box">
-            <div class="empty-state-icon">🚦</div>
-            <div class="empty-state-title">Video Stream Awaiting Execution</div>
-            <p style="max-width: 520px; margin: 0 auto 18px auto; color: #94A3B8; font-size: 0.92rem;">
-                Configure the optical preemption parameters in the control panel on the left,
-                then trigger the real-time simulation below.
-            </p>
-            <div class="empty-state-steps">
-                <div class="empty-step-item">
-                    <span class="step-num">1</span>
-                    <span>Select Model Weights</span>
-                </div>
-                <div class="empty-step-item">
-                    <span class="step-num">2</span>
-                    <span>Choose Input Video</span>
-                </div>
-                <div class="empty-step-item">
-                    <span class="step-num">3</span>
-                    <span>Click 'Start Simulation'</span>
-                </div>
+    html = textwrap.dedent("""
+    <div class="empty-state-box">
+        <div class="empty-state-icon">🚦</div>
+        <div class="empty-state-title">Video Stream Awaiting Execution</div>
+        <p style="max-width: 520px; margin: 0 auto 18px auto; color: #94A3B8; font-size: 0.92rem;">
+            Select a target CCTV Lane (Lanes 1 to 8), choose your video feed, and trigger the real-time simulation.
+        </p>
+        <div class="empty-state-steps">
+            <div class="empty-step-item">
+                <span class="step-num">1</span>
+                <span>Select CCTV Lane</span>
+            </div>
+            <div class="empty-step-item">
+                <span class="step-num">2</span>
+                <span>Choose Video Feed</span>
+            </div>
+            <div class="empty-step-item">
+                <span class="step-num">3</span>
+                <span>Start Simulation</span>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+    </div>
+    """)
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def render_metrics_row(emergency_count: int, normal_count: int, fps: float, signal_state: str, timer: float):
@@ -92,7 +88,7 @@ def render_metrics_row(emergency_count: int, normal_count: int, fps: float, sign
         st.metric(
             label="Ambulances Detected",
             value=f"{emergency_count}",
-            delta="In Lane 1" if emergency_count > 0 else None,
+            delta="In Monitored Lane" if emergency_count > 0 else None,
             delta_color="inverse" if emergency_count > 0 else "off"
         )
     with col2:
@@ -110,7 +106,7 @@ def render_metrics_row(emergency_count: int, normal_count: int, fps: float, sign
     with col4:
         state_icon = "🔴" if signal_state == "RED" else ("🟡" if signal_state == "YELLOW" else "🟢")
         st.metric(
-            label="Active Signal",
+            label="Lane Signal State",
             value=f"{state_icon} {signal_state}"
         )
     with col5:
@@ -125,73 +121,68 @@ def render_metrics_row(emergency_count: int, normal_count: int, fps: float, sign
         )
 
 
-def render_preemption_alert(state: str, is_amb_present: bool, timer: float, initial_timer: float = 50.0, preempt_target: float = 10.0):
+def render_preemption_alert(state: str, is_amb_present: bool, timer: float, initial_timer: float = 50.0, preempt_target: float = 10.0, lane_id: int = 1, road_name: str = "Road 1"):
     """
     Renders an attention-grabbing status alert banner showing current preemption state machine phase.
     """
     if state == "RED" and is_amb_present:
-        st.markdown(
-            f"""
-            <div style="background: rgba(255, 0, 127, 0.15); border: 1px solid #FF007F; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <div style="font-weight: 700; color: #FF007F; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.2rem;">⚡</span> EMERGENCY PREEMPTION TRIGGERED
-                    </div>
-                    <div style="color: #F1F5F9; font-size: 0.85rem; margin-top: 3px;">
-                        Ambulance spotted in Lane 1! Red cycle truncated from {int(initial_timer)}s to <b>{int(preempt_target)}s</b>.
-                    </div>
+        html = textwrap.dedent(f"""
+        <div style="background: rgba(255, 0, 127, 0.18); border: 2px solid #FF007F; border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 0 25px rgba(255,0,127,0.4);">
+            <div>
+                <div style="font-weight: 800; color: #FF007F; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.3rem;">🚨</span> EMERGENCY PREEMPTION TRIGGERED — LANE {lane_id}
                 </div>
-                <div style="background: #FF007F; color: #FFF; font-weight: 800; border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">
-                    OVERRIDE ACTIVE
+                <div style="color: #F1F5F9; font-size: 0.9rem; margin-top: 4px;">
+                    Ambulance spotted on <b>{road_name} (Lane {lane_id})</b>! Signal cycle truncated to <b>{int(preempt_target)}s</b> to clear junction queue.
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+            <div style="background: #FF007F; color: #FFF; font-weight: 800; border-radius: 8px; padding: 6px 14px; font-size: 0.9rem; text-transform: uppercase;">
+                OVERRIDE ACTIVE
+            </div>
+        </div>
+        """)
+        st.markdown(html, unsafe_allow_html=True)
     elif state == "GREEN":
         if is_amb_present:
-            st.markdown(
-                """
-                <div style="background: rgba(0, 230, 118, 0.15); border: 1px solid #00E676; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div style="font-weight: 700; color: #00E676; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 1.2rem;">🟢</span> GREEN CORRIDOR WAVE HELD
-                        </div>
-                        <div style="color: #F1F5F9; font-size: 0.85rem; margin-top: 3px;">
-                            Ambulance actively traversing junction. Green light locked on HOLD until vehicle exits frame.
-                        </div>
+            html = textwrap.dedent(f"""
+            <div style="background: rgba(0, 230, 118, 0.18); border: 2px solid #00E676; border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 0 25px rgba(0,230,118,0.4);">
+                <div>
+                    <div style="font-weight: 800; color: #00E676; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.3rem;">🟢</span> GREEN CORRIDOR WAVE HELD — {road_name}
                     </div>
-                    <div style="background: #00E676; color: #070311; font-weight: 800; border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">
-                        CROSS TRAFFIC STOPPED
+                    <div style="color: #F1F5F9; font-size: 0.9rem; margin-top: 4px;">
+                        Ambulance actively traversing intersection. Green light locked on HOLD until vehicle exits.
                     </div>
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
+                <div style="background: #00E676; color: #070311; font-weight: 800; border-radius: 8px; padding: 6px 14px; font-size: 0.9rem;">
+                    CROSS TRAFFIC STOPPED
+                </div>
+            </div>
+            """)
+            st.markdown(html, unsafe_allow_html=True)
         else:
-            st.markdown(
-                f"""
-                <div style="background: rgba(0, 229, 255, 0.12); border: 1px solid #00E5FF; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div style="font-weight: 700; color: #00E5FF; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 1.2rem;">🛡️</span> POST-CLEARANCE BUFFER ACTIVE
-                        </div>
-                        <div style="color: #F1F5F9; font-size: 0.85rem; margin-top: 3px;">
-                            Ambulance cleared intersection. Safe transition buffer expiring in {max(0.0, timer):.1f}s before yellow phase.
-                        </div>
+            html = textwrap.dedent(f"""
+            <div style="background: rgba(0, 229, 255, 0.15); border: 1px solid #00E5FF; border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 700; color: #00E5FF; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.2rem;">🛡️</span> POST-CLEARANCE BUFFER ACTIVE
                     </div>
-                    <div style="background: #00E5FF; color: #070311; font-weight: 800; border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">
-                        CLEARING
+                    <div style="color: #F1F5F9; font-size: 0.85rem; margin-top: 3px;">
+                        Ambulance cleared intersection. Safe transition buffer expiring in {max(0.0, timer):.1f}s before yellow phase.
                     </div>
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
+                <div style="background: #00E5FF; color: #070311; font-weight: 800; border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">
+                    CLEARING
+                </div>
+            </div>
+            """)
+            st.markdown(html, unsafe_allow_html=True)
 
 
-def render_traffic_signal_card(state: str, timer: float, preemption_active: bool, is_amb_detected: bool, initial_timer: float = 50.0, preempt_target: float = 10.0) -> str:
+def render_traffic_signal_card(state: str, timer: float, preemption_active: bool, is_amb_detected: bool, initial_timer: float = 50.0, preempt_target: float = 10.0, lane_id: int = 1, road_name: str = "Road 1") -> str:
     """
     Renders an animated, high-contrast, cyberpunk glassmorphic traffic signal HUD card.
+    Uses textwrap.dedent to ensure Markdown parser does not treat HTML as preformatted code.
     """
     red_dim = "0.18"
     yel_dim = "0.18"
@@ -252,11 +243,11 @@ def render_traffic_signal_card(state: str, timer: float, preemption_active: bool
         timer_display_text = f"{max(0.0, timer):4.1f}<span style='font-size: 16px; font-weight: 500;'>s</span>"
         cross_html = "<span style='color: #00E676; font-weight: 700;'>🚗 CROSS LANES: GREEN (FLOWING)</span>"
 
-    html = f"""
+    html = textwrap.dedent(f"""
     <div style="background: rgba(18, 7, 38, 0.85); border: 1px solid {banner_border}; border-radius: 16px; padding: 18px; color: #FFF; font-family: 'Outfit', 'Inter', sans-serif; box-shadow: 0 8px 32px rgba(0,0,0,0.5); backdrop-filter: blur(12px);">
         <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;">
             <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: #FFF;">SMART SIGNAL HUD</div>
-            <div style="font-size: 11px; background: {banner_bg}; border: 1px solid {banner_border}; border-radius: 20px; padding: 3px 8px; color: #FFF; font-weight: 600;">LANE 1 CONTROLLER</div>
+            <div style="font-size: 11px; background: {banner_bg}; border: 1px solid {banner_border}; border-radius: 20px; padding: 3px 8px; color: #FFF; font-weight: 600;">{road_name.upper()} (LANE {lane_id})</div>
         </div>
         
         <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
@@ -290,7 +281,107 @@ def render_traffic_signal_card(state: str, timer: float, preemption_active: bool
             {cross_html}
         </div>
     </div>
+    """)
+    return html
+
+
+def render_4way_junction_visualizer_html(active_road_id: int = 1, is_emergency: bool = False, emergency_road_id: int = 1, emergency_lane_id: int = 1):
     """
+    Renders an interactive, SVG-styled 4-road, 8-lane graphical intersection directly inside Streamlit!
+    """
+    # Signals status colors
+    def get_sig_color(r_id):
+        if is_emergency:
+            return "#00E676" if r_id == emergency_road_id else "#FF1744"
+        return "#00E676" if r_id == active_road_id else "#FF1744"
+
+    sig1 = get_sig_color(1)
+    sig2 = get_sig_color(2)
+    sig3 = get_sig_color(3)
+    sig4 = get_sig_color(4)
+
+    laser_overlay = ""
+    if is_emergency:
+        laser_overlay = f"""
+        <div style="position: absolute; inset: 0; pointer-events: none; border: 2px solid #FF007F; border-radius: 18px; box-shadow: 0 0 30px rgba(255,0,127,0.5); animation: pulseGlow 1.5s infinite;"></div>
+        """
+
+    html = textwrap.dedent(f"""
+    <div style="position: relative; background: #070311; border: 1px solid rgba(188,0,221,0.25); border-radius: 18px; padding: 18px; color: #FFF; font-family: 'Outfit', sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+        {laser_overlay}
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 12px;">
+            <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.5px; color: #FFF;">CENTRAL 4-ROAD JUNCTION (8 LANES)</span>
+            <span style="font-size: 11px; font-family: monospace; color: {("#FF007F" if is_emergency else "#00E676")}; font-weight: 700;">
+                {("🚨 EMERGENCY OVERRIDE (ROAD " + str(emergency_road_id) + " - LANE " + str(emergency_lane_id) + ")") if is_emergency else "● NORMAL CYCLIC ROTATION"}
+            </span>
+        </div>
+
+        <!-- 4-Road Diagram Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1.6fr 1fr; grid-template-rows: 80px 140px 80px; gap: 4px; text-align: center; font-size: 11px; font-family: monospace;">
+            <!-- Top Row: Empty / Road 1 (North) / Empty -->
+            <div></div>
+            <div style="background: rgba(18, 7, 38, 0.9); border: 1px solid {("#FF007F" if is_emergency and emergency_road_id==1 else "rgba(255,255,255,0.1)")}; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="font-weight: 700; color: #E2E8F0;">ROAD 1 (NORTH)</div>
+                <div style="display: flex; justify-content: space-around; font-size: 10px;">
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">L1 ↓</span>
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">L2 ↓</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: {sig1}; box-shadow: 0 0 8px {sig1};"></span>
+                    <span style="font-size: 10px; font-weight: 700; color: {sig1};">SIGNAL 1: {("GREEN" if sig1=="#00E676" else "RED")}</span>
+                </div>
+            </div>
+            <div></div>
+
+            <!-- Middle Row: Road 4 (West) / Central Node / Road 2 (East) -->
+            <div style="background: rgba(18, 7, 38, 0.9); border: 1px solid {("#FF007F" if is_emergency and emergency_road_id==4 else "rgba(255,255,255,0.1)")}; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="font-weight: 700; color: #E2E8F0;">ROAD 4 (WEST)</div>
+                <div style="font-size: 10px; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">L7 →</span>
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">L8 →</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: {sig4}; box-shadow: 0 0 8px {sig4};"></span>
+                    <span style="font-size: 10px; font-weight: 700; color: {sig4};">SIG 4: {("GRN" if sig4=="#00E676" else "RED")}</span>
+                </div>
+            </div>
+
+            <!-- Center Intersection -->
+            <div style="background: #0B051A; border: 2px dashed rgba(255,214,0,0.3); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 15px rgba(0,0,0,0.8);">
+                <span style="font-size: 18px;">🚦</span>
+                <span style="font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #E2E8F0; margin-top: 4px;">JUNCTION CORE</span>
+                <span style="font-size: 9px; color: #94A3B8;">CCTV AI INTERLOCK</span>
+            </div>
+
+            <div style="background: rgba(18, 7, 38, 0.9); border: 1px solid {("#FF007F" if is_emergency and emergency_road_id==2 else "rgba(255,255,255,0.1)")}; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="font-weight: 700; color: #E2E8F0;">ROAD 2 (EAST)</div>
+                <div style="font-size: 10px; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">← L3</span>
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">← L4</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: {sig2}; box-shadow: 0 0 8px {sig2};"></span>
+                    <span style="font-size: 10px; font-weight: 700; color: {sig2};">SIG 2: {("GRN" if sig2=="#00E676" else "RED")}</span>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Empty / Road 3 (South) / Empty -->
+            <div></div>
+            <div style="background: rgba(18, 7, 38, 0.9); border: 1px solid {("#FF007F" if is_emergency and emergency_road_id==3 else "rgba(255,255,255,0.1)")}; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: {sig3}; box-shadow: 0 0 8px {sig3};"></span>
+                    <span style="font-size: 10px; font-weight: 700; color: {sig3};">SIGNAL 3: {("GREEN" if sig3=="#00E676" else "RED")}</span>
+                </div>
+                <div style="display: flex; justify-content: space-around; font-size: 10px;">
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">L5 ↑</span>
+                    <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">L6 ↑</span>
+                </div>
+                <div style="font-weight: 700; color: #E2E8F0;">ROAD 3 (SOUTH)</div>
+            </div>
+            <div></div>
+        </div>
+    </div>
+    """)
     return html
 
 
