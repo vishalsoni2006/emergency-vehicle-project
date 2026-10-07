@@ -1,0 +1,37 @@
+# Python Caches & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Node & Frontend Build
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Mac OS metadata
+.DS_Store
+
+# Streamlit Local Secrets & Caches
+.streamlit/secrets.toml
+
+# Heavy Video Files & Generated Outputs
+*.mp4
+!WhatsApp Video 2026-09-13 at 18.14.01.mp4
+videos dataset/
+temp_*.mp4
+output_*.mp4
+demo_*.mp4
+
+# Heavy Datasets (Keep lightweight trained model checkpoints in runs/)
+merged_dataset/
+indian_dataset/
+scratch/
+*.zip
+*.tar.gz
+
+# IDE configs
+.idea/
+.vscode/
