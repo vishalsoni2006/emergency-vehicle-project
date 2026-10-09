@@ -20,7 +20,7 @@ export default function Header({
               <Radio className="w-4 h-4 animate-pulse" />
             </span>
             <h1 className="text-xl md:text-2xl font-black font-display tracking-tight text-white uppercase flex items-center gap-2">
-              AI Emergency Traffic Management System
+              Emergency Vehicle Project
             </h1>
           </div>
           <p className="text-xs md:text-sm font-medium text-slate-400 mt-0.5 tracking-wide">

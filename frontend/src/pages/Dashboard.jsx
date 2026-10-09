@@ -157,7 +157,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="w-full glass-panel border-t border-white/5 py-4 text-center text-xs font-mono text-slate-400">
-        AI Emergency Ambulance Traffic Signal Management System • College Engineering Demo Dashboard
+        Emergency Vehicle Project • College Engineering Demo Dashboard
       </footer>
     </div>
   );
