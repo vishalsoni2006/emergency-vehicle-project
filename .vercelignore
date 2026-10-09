@@ -16,3 +16,5 @@ runs/
 venv/
 .venv/
 .streamlit/
+*.docx
+*.pptx
