@@ -35,3 +35,7 @@ scratch/
 # IDE configs
 .idea/
 .vscode/
+
+# Word temp files & backups
+~$*
+*_BACKUP.*
