@@ -39,7 +39,7 @@ In urban environments, emergency vehicles frequently encounter severe traffic co
 
 ### 3. Detection Engine & Anti-Overfitting Safeguards
 - Deep Learning Architecture: Ultralytics YOLOv11 Nano.
-- Dual-Threshold Filtering:
+- Dual-Threshold Filtering :
   - Emergency Vehicles: Confidence threshold of 0.20 (prioritizing high recall).
   - Normal Traffic: Confidence threshold of 0.30 (filtering background noise).
 - HSV Siren Strobe Scanner:
